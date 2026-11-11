@@ -6,12 +6,16 @@ import { createContext, useEffect, useState } from "react";
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider ({children} : {children: React.ReactNode}) {
-    const [language, setLanguage] = useState<Language>('ar');
+    const [language, setLanguage] = useState<Language>(() => {
+    const savedLang = localStorage.getItem('preferred-lang') as Language;
+    return savedLang === 'ar' || savedLang === 'en' ? savedLang : 'ar';
+});
 
-    useEffect(() => {
-        document.documentElement.lang = language;
-        document.documentElement.dir = directions[language];
-    }, [language]);
+useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = directions[language];
+    localStorage.setItem('preferred-lang', language);
+}, [language]);
 
     const t = translations[language];
 
